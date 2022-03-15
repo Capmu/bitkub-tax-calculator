@@ -35,7 +35,7 @@ def calculate_profit(operation, currency):
     
     # remove the outed (amount) values
     if to_remove > 0:
-        for _ in to_remove:
+        for _ in range(to_remove):
             del wallet[currency][0]
     
     # calculate the profit
