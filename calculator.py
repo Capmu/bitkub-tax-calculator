@@ -15,7 +15,7 @@ def calculate_profit(operation, currency):
             if amount_checker >= oldest_purchese['amount']:
                 principle += (oldest_purchese['amount'] * oldest_purchese['value'])
                 amount_checker -= oldest_purchese['amount']
-                print('     used wood: {} -> remaing amount: {}'.format(oldest_purchese['amount'], amount_checker))
+                print('     An oldest value is out: {} -> remaing amount: {}'.format(oldest_purchese['amount'], amount_checker))
                 to_remove.append(buying_order)
             else:
                 principle += (amount_checker * oldest_purchese['value'])
@@ -24,9 +24,10 @@ def calculate_profit(operation, currency):
             buying_order += 1
         except Exception as ex:
             if str(ex) == 'list index out of range':
-                print('     Edge case! remaining amount: {}'.format(amount_checker))
+                print('     Floating issue!! remove remaining amount: {}'.format(amount_checker))
                 amount_checker = 0
             else:
+                print('ERROR! Something went wrong.')
                 sys.exit()
     
     # FIFO logic
@@ -36,9 +37,7 @@ def calculate_profit(operation, currency):
     
     # calculate the profit
     profit = principle - (operation['amount'] * operation['value'])
-    #-----------------------------------------------------
     print('PROF ({}): {}'.format(currency, profit))
-    #-----------------------------------------------------
     if profit > 0:
         return profit
     else:
@@ -62,7 +61,6 @@ for i in range(len(report_df)):
     if currency not in currencies:
         currencies.append(currency)
         wallet[currency] = []
-        # history[currency] = []
 print('Currency {}'.format(str(currencies)))
 
 # creating history dict
@@ -77,21 +75,14 @@ for i in range(len(report_df)):
             'value': value,
             'amount': amount
         })
-
-        #-----------------------------------------------------
         print('\n++++++++++++ BUYD ({}): {} VALUE: {}'.format(currency, amount, value))
-        #-----------------------------------------------------
 
     elif type == 'sell' and currency != 'THB':
-
-        #-----------------------------------------------------
-        HAV = 0
+        having = 0
         for wood in wallet[currency]:
-            HAV += wood['amount']
-        print('\nHAVE ({}): {}'.format(currency, HAV))
+            having += wood['amount']
+        print('\nHAVE ({}): {}'.format(currency, having))
         print('SELL ({}): {} VALUE: {}'.format(currency, -1 * report_df['Amount'][i], float(report_df['Description'][i][(8+len(currency)):])))
-        print('EXPE ({}): {}'.format(currency, HAV - (-1 * report_df['Amount'][i])))
-        #-----------------------------------------------------
         
         operation = {
             'type': type,
@@ -101,10 +92,7 @@ for i in range(len(report_df)):
         profit = calculate_profit(operation, currency)
         if profit > 0:
             sum_profit += profit
-        
-        #-----------------------------------------------------
         print('LEFT ({}): {}'.format(currency, wallet[currency]))
-        #-----------------------------------------------------
     
     elif type == 'fee' and currency == 'THB':
         fee += -1 * report_df['Amount'][i]
