@@ -6,8 +6,11 @@ def calculate_profit(operation, currency):
     buying_order = 0
     principle = 0
     amount_checker = operation['amount']
-    to_remove = []
+    to_remove = 0
 
+    #--------------------------------------------------------
+    # Using FIFO (First-In-First-Out) logic
+    #--------------------------------------------------------
     # finding overall principle price
     while amount_checker > 0:
         try:
@@ -16,7 +19,7 @@ def calculate_profit(operation, currency):
                 principle += (oldest_purchese['amount'] * oldest_purchese['value'])
                 amount_checker -= oldest_purchese['amount']
                 print('     An oldest value is out: {} -> remaing amount: {}'.format(oldest_purchese['amount'], amount_checker))
-                to_remove.append(buying_order)
+                to_remove += 1
             else:
                 principle += (amount_checker * oldest_purchese['value'])
                 wallet[currency][buying_order]['amount'] -= amount_checker
@@ -30,9 +33,9 @@ def calculate_profit(operation, currency):
                 print('ERROR! Something went wrong.')
                 sys.exit()
     
-    # FIFO logic
-    if len(to_remove) > 0:
-        for e in to_remove:
+    # remove the outed (amount) values
+    if to_remove > 0:
+        for _ in to_remove:
             del wallet[currency][0]
     
     # calculate the profit
